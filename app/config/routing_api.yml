@@ -1,0 +1,9 @@
+api_topic:
+    type:   rest
+    prefix: /api
+    resource: "routing/topic.yml"
+
+api_article:
+    type:   rest
+    prefix: /api
+    resource: "routing/article.yml"

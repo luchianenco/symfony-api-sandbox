@@ -1,0 +1,43 @@
+app:
+  build: ./docker
+  container_name: api-app
+  ports:
+    - 8004:80
+  volumes:
+    - .:/app
+  links:
+    - redis
+    - mysql
+    - phpmyadmin
+  environment:
+    - RELATIVE_APP_ROOT=web
+    - PHP_INDEX_FILE=app_dev.php
+
+redis:
+  container_name: api-redis
+  image: redis
+
+mysql:
+  container_name: api-mysql
+  image: mysql/mysql-server:5.7
+  ports:
+    - 33064:3306
+  volumes:
+    - ./data:/var/lib/mysql
+  environment:
+    MYSQL_ROOT_PASSWORD: password
+    MYSQL_USER: user
+    MYSQL_PASSWORD: 123
+    MYSQL_DATABASE: symfony
+
+phpmyadmin:
+  container_name: api-phpmyadmin
+  image: phpmyadmin/phpmyadmin
+  restart: always
+  ports:
+    - 8084:80
+  environment:
+    PMA_HOST: mysql
+    MYSQL_ROOT_PASSWORD: password
+  links:
+    - mysql

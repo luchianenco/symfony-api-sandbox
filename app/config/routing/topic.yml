@@ -1,0 +1,30 @@
+api_topic_create:
+    path:  /topic
+    defaults: { _controller: AppBundle:Api/Topic:create, _format: ~ }
+    methods: [POST]
+
+api_topic_read:
+    path:  /topic/{id}
+    defaults: { _controller: AppBundle:Api/Topic:read, _format: ~ }
+    methods: [GET]
+    requirements:
+        id: "\d+"
+
+api_topic_update:
+    path:  /topic/{id}
+    defaults: { _controller: AppBundle:Api/Topic:update, _format: ~ }
+    methods: [PUT]
+    requirements:
+        id: "\d+"
+
+api_topic_delete:
+    path:  /topic/{id}
+    defaults: { _controller: AppBundle:Api/Topic:delete, _format: ~ }
+    methods: [DELETE]
+    requirements:
+        id: "\d+"
+
+api_topic_list:
+    path:  /topics
+    defaults: { _controller: AppBundle:Api/Topic:list, _format: ~ }
+    methods: [GET]

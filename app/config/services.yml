@@ -1,0 +1,8 @@
+services:
+    api.topic:
+        class: AppBundle\Service\Api\TopicService
+        arguments: ["@doctrine.orm.entity_manager", "@request_stack", "@form.factory"]
+
+    api.article:
+        class: AppBundle\Service\Api\ArticleService
+        arguments: ["@doctrine.orm.entity_manager", "@request_stack", "@form.factory"]

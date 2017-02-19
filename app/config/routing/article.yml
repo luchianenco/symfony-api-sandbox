@@ -1,0 +1,25 @@
+api_article_create:
+    path:  /article
+    defaults: { _controller: AppBundle:Api/Article:create, _format: ~ }
+    methods: [POST]
+
+api_article_read:
+    path:  /article/{id}
+    defaults: { _controller: AppBundle:Api/Article:read, _format: ~ }
+    methods: [GET]
+    requirements:
+        id: "\d+"
+
+api_article_update:
+    path:  /article/{id}
+    defaults: { _controller: AppBundle:Api/Article:update, _format: ~ }
+    methods: [PUT]
+    requirements:
+        id: "\d+"
+
+api_article_delete:
+    path:  /article/{id}
+    defaults: { _controller: AppBundle:Api/Article:delete, _format: ~ }
+    methods: [DELETE]
+    requirements:
+        id: "\d+"
