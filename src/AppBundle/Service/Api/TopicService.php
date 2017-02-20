@@ -56,7 +56,7 @@ class TopicService implements ApiCrudInterface, ApiExtraInterface
     {
         $request = $this->requestStack->getMasterRequest();
 
-        $form = $this->formFactory->create(TopicType::class, new Topic())->handleRequest($request);
+        $form = $this->formFactory->create(TopicType::class, new Topic());
         $topic = $form->submit($request->request->get($form->getName()))->getData();
 
         if (!$topic instanceof Topic) {

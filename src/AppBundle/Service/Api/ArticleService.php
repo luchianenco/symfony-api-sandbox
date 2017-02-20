@@ -57,7 +57,7 @@ class ArticleService implements ApiCrudInterface
     {
         $request = $this->requestStack->getMasterRequest();
 
-        $form = $this->formFactory->create(ArticleType::class, new Article())->handleRequest($request);
+        $form = $this->formFactory->create(ArticleType::class, new Article());
         $article= $form->submit($request->request->get($form->getName()))->getData();
 
         if (!$article instanceof Article) {
