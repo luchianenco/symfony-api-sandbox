@@ -81,5 +81,5 @@ VOLUME /var
 ENV HOME /var/www
 RUN usermod -s /bin/bash www-data
 RUN usermod -d /var/www/ www-data
-RUN usermod -u 501 www-data -s /bin/bash
+RUN usermod -u $USER_ID www-data -s /bin/bash
 WORKDIR $APP_ROOT
