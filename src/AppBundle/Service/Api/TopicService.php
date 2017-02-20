@@ -164,4 +164,31 @@ class TopicService implements ApiCrudInterface, ApiExtraInterface
 
         return [];
     }
+
+    /**
+     * Get Topic Articles by Topic ID
+     * @param $id
+     * @return mixed
+     * @throws \InvalidArgumentException
+     */
+    public function articles($id)
+    {
+        if (!filter_var($id, FILTER_VALIDATE_INT)) {
+            throw new \InvalidArgumentException('Invalid type, expected integer but got "' . gettype($id) . '"');
+        }
+
+        $topic = $this->em->getRepository('AppBundle:Topic')->find($id);
+
+        if (!$topic instanceof Topic) {
+            throw new \InvalidArgumentException('Topic not found');
+        }
+
+        $result = $this->em->getRepository('AppBundle:Article')->findByTopic($topic);
+
+        if (empty($result)) {
+            throw new \InvalidArgumentException('Articles not found');
+        }
+
+        return $result;
+    }
 }

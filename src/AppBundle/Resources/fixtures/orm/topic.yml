@@ -1,0 +1,3 @@
+AppBundle\Entity\Topic:
+    topic1:
+        title: 'Sport'

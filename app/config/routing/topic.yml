@@ -28,3 +28,8 @@ api_topic_list:
     path:  /topics
     defaults: { _controller: AppBundle:Api/Topic:list, _format: ~ }
     methods: [GET]
+
+api_topic_articles_list:
+    path:  /topic/{id}/articles
+    defaults: { _controller: AppBundle:Api/Topic:articles, _format: ~ }
+    methods: [GET]

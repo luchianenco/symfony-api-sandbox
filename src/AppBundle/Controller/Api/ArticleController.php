@@ -47,7 +47,7 @@ class ArticleController extends FOSRestController
             $statusCode = 201;
         } catch (\Exception $e) {
             // if an exception thrown - return error
-            $article = ['message'=> $e->getMessage()];
+            $article = [];
             $statusCode = 500;
         }
         return $this->view($article, $statusCode);

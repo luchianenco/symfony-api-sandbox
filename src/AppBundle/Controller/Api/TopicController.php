@@ -101,4 +101,18 @@ class TopicController extends FOSRestController
         }
         return $this->view($topic, $statusCode);
     }
+
+    public function articlesAction($id)
+    {
+        try {
+            // if no error - topic found
+            $topic = $this->get('api.topic')->articles($id);
+            $statusCode = 200;
+        } catch (\InvalidArgumentException $e) {
+            // if an exception thrown - return error
+            $topic = [];
+            $statusCode = 204;
+        }
+        return $this->view($topic, $statusCode);
+    }
 }

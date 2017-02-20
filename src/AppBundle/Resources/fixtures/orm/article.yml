@@ -1,0 +1,6 @@
+AppBundle\Entity\Article:
+    article_{1..10}:
+        title: <sentence()>
+        author: <name()>
+        text: <text()>
+        topic: '@topic*'

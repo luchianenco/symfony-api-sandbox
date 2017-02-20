@@ -1,4 +1,14 @@
-.checkout
+Symfony 2 API Sandbox
 =========
 
-A Symfony project created on February 18, 2017, 5:19 pm.
+Configure DB settings in ´app/config/parameters.yml´ 
+
+run below command to create db schema
+
+    php app/console doctrine:schema:create
+
+then run next command to create fixtures
+
+    php app/console hautelook:fixtures:load
+    
+    
