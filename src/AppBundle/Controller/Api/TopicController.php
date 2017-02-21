@@ -2,7 +2,9 @@
 
 namespace AppBundle\Controller\Api;
 
+use AppBundle\Service\Api\StatusCode;
 use FOS\RestBundle\Controller\FOSRestController;
+use Symfony\Component\HttpFoundation\Response;
 
 class TopicController extends FOSRestController
 {
@@ -16,11 +18,11 @@ class TopicController extends FOSRestController
         try {
             // if no error - topic found
             $topic = $this->get('api.topic')->read($id);
-            $statusCode = 200;
+            $statusCode = StatusCode::OK;
         } catch (\InvalidArgumentException $e) {
             // if an exception thrown - return nothing
             $topic = [];
-            $statusCode = 404;
+            $statusCode = StatusCode::NOT_FOUND;
         }
 
         return $this->view($topic, $statusCode);
@@ -35,11 +37,11 @@ class TopicController extends FOSRestController
         try {
             // if no error - topic found
             $topic = $this->get('api.topic')->list();
-            $statusCode = 200;
+            $statusCode = StatusCode::OK;
         } catch (\InvalidArgumentException $e) {
             // if an exception thrown - return nothing
             $topic = [];
-            $statusCode = 204;
+            $statusCode = StatusCode::NO_CONTENT;
         }
 
         return $this->view($topic, $statusCode);
@@ -54,11 +56,11 @@ class TopicController extends FOSRestController
         try {
             // if no error - topic found
             $topic = $this->get('api.topic')->create();
-            $statusCode = 201;
+            $statusCode = Response::HTTP_CREATED;
         } catch (\Exception $e) {
             // if an exception thrown - return error
             $topic = [];
-            $statusCode = 500;
+            $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
         }
         return $this->view($topic, $statusCode);
     }
@@ -74,11 +76,11 @@ class TopicController extends FOSRestController
         try {
             // if no error - topic found
             $topic = $this->get('api.topic')->update($id);
-            $statusCode = 200;
+            $statusCode = Response::HTTP_OK;
         } catch (\InvalidArgumentException $e) {
             // if an exception thrown - return error
             $topic = [];
-            $statusCode = 204;
+            $statusCode = Response::HTTP_NO_CONTENT;
         }
         return $this->view($topic, $statusCode);
     }
@@ -93,11 +95,11 @@ class TopicController extends FOSRestController
         try {
             // if no error - topic found
             $topic = $this->get('api.topic')->delete($id);
-            $statusCode = 200;
+            $statusCode = Response::HTTP_OK;
         } catch (\InvalidArgumentException $e) {
             // if an exception thrown - return error
             $topic = [];
-            $statusCode = 204;
+            $statusCode = Response::HTTP_NO_CONTENT;
         }
         return $this->view($topic, $statusCode);
     }
@@ -107,11 +109,11 @@ class TopicController extends FOSRestController
         try {
             // if no error - topic found
             $topic = $this->get('api.topic')->articles($id);
-            $statusCode = 200;
+            $statusCode = Response::HTTP_OK;
         } catch (\InvalidArgumentException $e) {
             // if an exception thrown - return error
             $topic = [];
-            $statusCode = 204;
+            $statusCode = Response::HTTP_NO_CONTENT;
         }
         return $this->view($topic, $statusCode);
     }

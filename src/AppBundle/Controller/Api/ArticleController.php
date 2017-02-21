@@ -3,6 +3,7 @@
 namespace AppBundle\Controller\Api;
 
 use FOS\RestBundle\Controller\FOSRestController;
+use Symfony\Component\HttpFoundation\Response;
 
 class ArticleController extends FOSRestController
 {
@@ -16,11 +17,11 @@ class ArticleController extends FOSRestController
         try {
             // if no error - topic found
             $article = $this->get('api.article')->read($id);
-            $statusCode = 200;
+            $statusCode = Response::HTTP_OK;
         } catch (\InvalidArgumentException $e) {
             // if an exception thrown - return nothing
             $article = [];
-            $statusCode = 404;
+            $statusCode = Response::HTTP_NOT_FOUND;
         }
 
         return $this->view($article, $statusCode);
@@ -44,11 +45,11 @@ class ArticleController extends FOSRestController
         try {
             // if no error - topic found
             $article = $this->get('api.article')->create();
-            $statusCode = 201;
+            $statusCode = Response::HTTP_CREATED;
         } catch (\Exception $e) {
             // if an exception thrown - return error
             $article = [];
-            $statusCode = 500;
+            $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
         }
         return $this->view($article, $statusCode);
     }
@@ -65,11 +66,11 @@ class ArticleController extends FOSRestController
         try {
             // if no error - topic found
             $article = $this->get('api.article')->update($id);
-            $statusCode = 200;
+            $statusCode = Response::HTTP_OK;
         } catch (\InvalidArgumentException $e) {
             // if an exception thrown - return error
             $article = [];
-            $statusCode = 204;
+            $statusCode = Response::HTTP_NO_CONTENT;
         }
         return $this->view($article, $statusCode);
     }
@@ -85,11 +86,11 @@ class ArticleController extends FOSRestController
         try {
             // if no error - topic found
             $article = $this->get('api.article')->delete($id);
-            $statusCode = 200;
+            $statusCode = Response::HTTP_OK;
         } catch (\InvalidArgumentException $e) {
             // if an exception thrown - return error
             $article = [];
-            $statusCode = 204;
+            $statusCode = Response::HTTP_NO_CONTENT;
         }
         return $this->view($article, $statusCode);
     }
