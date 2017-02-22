@@ -8,7 +8,7 @@ services:
   - mysql
 
 before_script:
-  - cp app/config/parameters.yml.dist app/config/parameters.yml
+  - cp app/config/parameters_travis.yml.dist app/config/parameters.yml
   - "mkdir -p ~/.composer"
   - composer self-update
   - composer install
