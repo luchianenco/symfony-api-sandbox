@@ -8,6 +8,7 @@ services:
   - mysql
 
 before_script:
+  - mysql -e 'create database api_test;'
   - cp app/config/parameters_travis.yml.dist app/config/parameters.yml
   - "mkdir -p ~/.composer"
   - composer self-update
