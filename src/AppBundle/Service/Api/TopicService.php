@@ -183,7 +183,9 @@ class TopicService implements ApiCrudInterface, ApiExtraInterface
             throw new \InvalidArgumentException('Topic not found');
         }
 
-        $result = $this->em->getRepository('AppBundle:Article')->findByTopic($topic);
+        $result = $this->em->getRepository('AppBundle:Article')->findBy([
+            'topic' => $topic
+        ]);
 
         if (empty($result)) {
             throw new \InvalidArgumentException('Articles not found');
