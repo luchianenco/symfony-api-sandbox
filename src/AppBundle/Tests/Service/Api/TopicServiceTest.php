@@ -17,7 +17,6 @@ use Prophecy\Prophet;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormFactory;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -202,7 +201,6 @@ class TopicServiceTest extends TestCase
     {
         $topicRepository = $this->prophet->prophesize(TopicRepository::class);
         $topicRepository->willExtend(EntityRepository::class);
-
 
         return $topicRepository;
     }
