@@ -86,8 +86,39 @@ class ArticleServiceTest extends TestCase
         $service = new ArticleService($this->em->reveal(), $this->requestStack, $this->formFactory->reveal());
         $result = $service->read(1);
 
-        $this->assertEquals($article, $result);
-        $this->assertEquals($topic, $result->getTopic());
+        self::assertEquals($article, $result);
+        self::assertEquals($article->getId(), $result->getId());
+        self::assertEquals($article->getTitle(), $result->getTitle());
+        self::assertEquals($article->getAuthor(), $result->getAuthor());
+        self::assertEquals($article->getText(), $result->getText());
+        self::assertEquals($article->getTopic(), $result->getTopic());
+    }
+
+    /**
+     * Throws Exception On Invalid ID
+     */
+    public function testReadThrowsExceptionOnInvalidId()
+    {
+        $service = new ArticleService($this->em->reveal(), $this->requestStack, $this->formFactory->reveal());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $service->read('sdfds');
+    }
+
+    /**
+     * Throws Exception When No Articles Found
+     */
+    public function testReadThrowsExceptionOnRepoNoResult()
+    {
+        $articleRepository = $this->mockArticleRepository();
+        $articleRepository->find(1000)->willReturn(null);
+
+        $this->em->getRepository('AppBundle:Article')->willReturn($articleRepository);
+
+        $service = new ArticleService($this->em->reveal(), $this->requestStack, $this->formFactory->reveal());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $service->read(1000);
     }
 
     /**
@@ -95,7 +126,6 @@ class ArticleServiceTest extends TestCase
      */
     public function testItCanCreate()
     {
-
         $requestData = [
             'article' => [
                 'title' => 'World Cup',
@@ -130,9 +160,37 @@ class ArticleServiceTest extends TestCase
         $service = new ArticleService($this->em->reveal(), $requestStack, $this->formFactory->reveal());
         $result = $service->create();
 
-        $this->assertEquals($article, $result);
-
+        self::assertEquals($article, $result);
         $this->prophet->checkPredictions();
+    }
+
+    /**
+     * Throws Exception When No Articles Created
+     */
+    public function testCreateThrowsExceptionOnRepoNoResult()
+    {
+        $requestData = [
+            'sport' => [
+                'title' => 'World Cup',
+                'author' => 'John Dow',
+                'text' => 'Text',
+                'topic' => 1
+            ]
+        ];
+
+        $requestStack = $this->mockRequestStack($this->query, $requestData);
+
+        $form = $this->prophet->prophesize(Form::class);
+        $form->getName()->willReturn('sport');
+        $form->submit(Argument::type('array'))->willReturn($form);
+        $form->getData()->willReturn(null);
+
+        $this->formFactory->create(Argument::type('string'), new Article())->willReturn($form);
+
+        $service = new ArticleService($this->em->reveal(), $requestStack, $this->formFactory->reveal());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $service->create();
     }
 
     /**
@@ -188,8 +246,35 @@ class ArticleServiceTest extends TestCase
         $service = new ArticleService($this->em->reveal(), $requestStack, $this->formFactory->reveal());
         $result = $service->update(1);
 
-        $this->assertEquals($result, $articleUpdated);
+        self::assertEquals($result, $articleUpdated);
         $this->prophet->checkPredictions();
+    }
+
+    /**
+     * Throws Exception When On Invalid ID
+     */
+    public function testUpdateThrowsExceptionOnInvalidId()
+    {
+        $service = new ArticleService($this->em->reveal(), $this->requestStack, $this->formFactory->reveal());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $service->update('sdfds');
+    }
+
+    /**
+     * Throws Exception When No Articles Found
+     */
+    public function testUpdateThrowsExceptionOnRepoNoResult()
+    {
+        $articleRepository = $this->mockArticleRepository();
+        $articleRepository->find(1000)->willReturn(null);
+
+        $this->em->getRepository('AppBundle:Article')->willReturn($articleRepository);
+
+        $service = new ArticleService($this->em->reveal(), $this->requestStack, $this->formFactory->reveal());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $service->update(1000);
     }
 
     /**
@@ -218,7 +303,34 @@ class ArticleServiceTest extends TestCase
         $service = new ArticleService($this->em->reveal(), $this->requestStack, $this->formFactory->reveal());
         $result = $service->delete(1);
 
-        $this->assertEquals($result, []);
+        self::assertEquals($result, []);
+    }
+
+    /**
+     * Throws Exception On Invalid ID
+     */
+    public function testDeleteThrowsExceptionOnInvalidId()
+    {
+        $service = new ArticleService($this->em->reveal(), $this->requestStack, $this->formFactory->reveal());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $service->delete('sdfds');
+    }
+
+    /**
+     * Throws Exception When No Articles Found
+     */
+    public function testDeleteThrowsExceptionOnRepoNoResult()
+    {
+        $articleRepository = $this->mockArticleRepository();
+        $articleRepository->find(1000)->willReturn(null);
+
+        $this->em->getRepository('AppBundle:Article')->willReturn($articleRepository);
+
+        $service = new ArticleService($this->em->reveal(), $this->requestStack, $this->formFactory->reveal());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $service->delete(1000);
     }
 
     /**
