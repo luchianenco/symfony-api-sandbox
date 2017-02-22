@@ -12,9 +12,9 @@ before_script:
   - cp app/config/parameters_travis.yml.dist app/config/parameters.yml
   - "mkdir -p ~/.composer"
   - composer self-update
-  - composer install
+  - composer install --dev
   - php app/console doctrine:schema:create --env=test
   - php app/console hautelook_alice:doctrine:fixtures:load -n --env=test
 
 script:
-  - phpunit --configuration ./app/Resources/phpunit.xml.dist --coverage-text
+  - phpunit --configuration ./app/phpunit.xml.dist --coverage-text
