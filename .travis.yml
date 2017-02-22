@@ -2,16 +2,14 @@ sudo: required
 
 language: php
 php:
-  - '5.4'
-  - '5.5'
   - '5.6'
   - '7.0'
 
 services:
   - docker
 
-before_install:
-  - sh docker.sh
+install:
+- sh docker.sh
 
 before_script:
   - "mkdir -p ~/.composer"
