@@ -8,48 +8,69 @@
 namespace AppBundle\Tests\Service\Api;
 
 use AppBundle\Entity\Topic;
+use AppBundle\Repository\TopicRepository;
 use AppBundle\Service\Api\TopicService;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
 use Prophecy\Argument;
 use Prophecy\Prophet;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormFactory;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class TopicServiceTest extends TestCase
 {
+    /**
+     * @var \Prophecy\Prophecy\ObjectProphecy
+     */
     private $em;
 
+    /**
+     * @var \Prophecy\Prophecy\ObjectProphecy
+     */
     private $requestStack;
 
+    /**
+     * @var \Prophecy\Prophecy\ObjectProphecy
+     */
     private $formFactory;
+
+    /**
+     * @var array
+     */
+    private $query;
 
     /**
      * @var Prophet
      */
     private $prophet;
 
+    /**
+     * Set Up
+     */
     public function setUp()
     {
+        $this->query = [];
         $this->prophet = new Prophet();
 
-        $this->requestStack = new RequestStack();
-        $session = $this->prophet->prophesize('Symfony\Component\HttpFoundation\Session\SessionInterface');
-        $request = new Request();
-        $request->setSession($session->reveal());
-
-        $this->requestStack->push($request);
-
-        $this->em = $this->prophet->prophesize('Doctrine\ORM\EntityManager');
-        $this->formFactory = $this->prophet->prophesize('Symfony\Component\Form\FormFactory');
+        $this->requestStack = $this->mockRequestStack($this->query, []);
+        $this->em = $this->prophet->prophesize(EntityManager::class);
+        $this->formFactory = $this->prophet->prophesize(FormFactory::class);
     }
 
+    /**
+     * Topic Read Test
+     */
     public function testItCanRead()
     {
         $topic = new Topic();
         $topic->setTitle('Test');
-        $topicRepository = $this->prophet->prophesize('Doctrine\ORM\EntityRepository\TopicRepository');
-        $topicRepository->willExtend('Doctrine\ORM\EntityRepository');
-        $topicRepository->find('1')->willReturn($topic);
+        $topicRepository = $this->mockTopicRepository();
+        $topicRepository->find(1)->willReturn($topic);
 
         $this->em->getRepository('AppBundle:Topic')->willReturn($topicRepository);
 
@@ -59,13 +80,15 @@ class TopicServiceTest extends TestCase
         $this->assertEquals($topic, $result);
     }
 
+    /**
+     * Topic List Test
+     */
     public function testItCanList()
     {
         $topic = new Topic();
         $topic->setTitle('Test');
         $topics = [$topic];
-        $topicRepository = $this->prophet->prophesize('Doctrine\ORM\EntityRepository\TopicRepository');
-        $topicRepository->willExtend('Doctrine\ORM\EntityRepository');
+        $topicRepository = $this->mockTopicRepository();
         $topicRepository->findAll()->willReturn($topics);
 
         $this->em->getRepository('AppBundle:Topic')->willReturn($topicRepository);
@@ -76,9 +99,12 @@ class TopicServiceTest extends TestCase
         $this->assertEquals($topics, $result);
     }
 
+    /**
+     * Topic Create Test
+     */
     public function testItCanCreate()
     {
-        $query = [];
+
         $requestData = [
             'topic' => [
                 'title' => 'Test'
@@ -88,27 +114,112 @@ class TopicServiceTest extends TestCase
         $topic = new Topic();
         $topic->setTitle('Test');
 
-        $session = $this->prophet->prophesize('Symfony\Component\HttpFoundation\Session\SessionInterface');
-        $request = new Request($query, $requestData);
-        $request->setSession($session->reveal());
+        $requestStack = $this->mockRequestStack($this->query, $requestData);
 
-        $requestStack = new RequestStack();
-        $requestStack->push($request);
-
-        $form = $this->prophet->prophesize('Symfony\Component\Form');
-        $form->willImplement('Symfony\Component\Form\FormInterface');
+        $form = $this->prophet->prophesize(Form::class);
         $form->getName()->willReturn('topic');
         $form->submit(Argument::type('array'))->willReturn($form);
         $form->getData()->willReturn($topic);
 
         $this->formFactory->create(Argument::type('string'), new Topic())->willReturn($form);
+        $this->em->persist($topic)->shouldBeCalledTimes(1);
+        $this->em->flush()->shouldBeCalledTimes(1);
 
         $service = new TopicService($this->em->reveal(), $requestStack, $this->formFactory->reveal());
         $result = $service->create();
 
         $this->assertEquals($topic, $result);
-        $this->em->flush()->shouldBeCalledTimes(1);
 
         $this->prophet->checkPredictions();
+    }
+
+    /**
+     * Topic Update Test
+     */
+    public function testItCanUpdate()
+    {
+        $topic = new Topic();
+        $topic->setTitle('Test');
+
+        $topicUpdated = new Topic();
+        $topicUpdated->setTitle('Sport');
+
+        $requestData = [
+            'topic' => [
+                'title' => 'Sport'
+            ]
+        ];
+
+        $requestStack = $this->mockRequestStack($this->query, $requestData);
+
+        $topicRepository = $this->mockTopicRepository($topic);
+        $topicRepository->find(1)->willReturn($topic);
+
+        $this->em->getRepository('AppBundle:Topic')->willReturn($topicRepository);
+        $this->em->persist($topicUpdated)->shouldBeCalledTimes(1);
+        $this->em->flush()->shouldBeCalledTimes(1);
+
+        $form = $this->prophet->prophesize(Form::class);
+        $form->getName()->willReturn('topic');
+        $form->submit(Argument::type('array'))->willReturn($form);
+        $form->getData()->willReturn($topicUpdated);
+
+        $this->formFactory->create(Argument::type('string'), $topic)->willReturn($form);
+
+        $service = new TopicService($this->em->reveal(), $requestStack, $this->formFactory->reveal());
+        $result = $service->update(1);
+
+        $this->assertEquals($result, $topicUpdated);
+        $this->prophet->checkPredictions();
+    }
+
+    /**
+     * Topic Delete Test
+     */
+    public function testItCanDelete()
+    {
+        $topic = new Topic();
+        $topic->setTitle('Test');
+
+        $topicRepository = $this->mockTopicRepository();
+        $topicRepository->find(1)->willReturn($topic);
+
+        $this->em->getRepository('AppBundle:Topic')->willReturn($topicRepository);
+        $this->em->remove($topic)->shouldBeCalled();
+        $this->em->flush()->shouldBeCalled();
+
+        $service = new TopicService($this->em->reveal(), $this->requestStack, $this->formFactory->reveal());
+        $result = $service->delete(1);
+
+        $this->assertEquals($result, []);
+    }
+
+    /**
+     * Mock Topic Repository
+     * @return \Prophecy\Prophecy\ObjectProphecy
+     */
+    private function mockTopicRepository()
+    {
+        $topicRepository = $this->prophet->prophesize(TopicRepository::class);
+        $topicRepository->willExtend(EntityRepository::class);
+
+
+        return $topicRepository;
+    }
+
+    /**
+     * @param $query
+     * @param $request
+     * @return RequestStack
+     */
+    private function mockRequestStack($query, $request)
+    {
+        $requestStack = new RequestStack();
+        $session = $this->prophet->prophesize(Session::class);
+        $req = new Request($query, $request);
+        $req->setSession($session->reveal());
+        $requestStack->push($req);
+
+        return $requestStack;
     }
 }
