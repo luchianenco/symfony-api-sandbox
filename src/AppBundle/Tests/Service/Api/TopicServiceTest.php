@@ -206,6 +206,7 @@ class TopicServiceTest extends TestCase
     }
 
     /**
+     * Mock RequestStack
      * @param $query
      * @param $request
      * @return RequestStack

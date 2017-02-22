@@ -193,7 +193,7 @@ class ArticleServiceTest extends TestCase
     }
 
     /**
-     * Topic Delete Test
+     * Article Delete Test
      */
     public function testItCanDelete()
     {
@@ -234,6 +234,7 @@ class ArticleServiceTest extends TestCase
     }
 
     /**
+     * Mock RequestStack
      * @param $query
      * @param $request
      * @return RequestStack
