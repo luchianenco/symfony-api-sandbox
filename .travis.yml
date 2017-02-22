@@ -5,14 +5,16 @@ php:
   - '7.0'
 
 services:
-  - docker
+  - mysql
 
 before_script:
-  - mysql -e 'create database api_test;'
   - cp app/config/parameters.yml.dist app/config/parameters.yml
   - "mkdir -p ~/.composer"
   - composer self-update
-  - composer install --prefer-source --optimize-autoloader
-  - composer install -n
+  - composer install
+  - php app/console doctrine:database:create --env=test
+  - php app/console doctrine:schema:create --env=test
+  - php app/console hautelook_alice:doctrine:fixtures:load -n --env=test
 
-script: phpunit -c app
+script:
+  - phpunit --configuration ./app/Resources/phpunit.xml.dist --coverage-text
