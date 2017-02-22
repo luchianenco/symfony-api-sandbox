@@ -1,4 +1,5 @@
 Symfony 2 API Sandbox
+[![Build Status](https://travis-ci.org/luchianenco/symfony-api-sandbox.svg?branch=master)](https://travis-ci.org/luchianenco/symfony-api-sandbox)
 =========
 
 Configure DB settings in ´app/config/parameters.yml´ 
